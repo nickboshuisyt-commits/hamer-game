@@ -1,1 +1,74 @@
-<h1>Welcome to Hamer Game!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hammer Clicker Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #hammer {
+            width: 100px;
+            height: 100px;
+            background-image: url('assets/marit.png');
+            background-size: cover;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        #hammer:active {
+            transform: scale(0.9);
+        }
+        #counter {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #reset {
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="hammer"></div>
+    <div id="counter">Clicks: 0</div>
+    <button id="reset">Reset</button>
+    <video id="video" width="320" height="240" controls style="display:none;">
+        <source src="assets/video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <script>
+        let clicks = 0;
+        const counterDisplay = document.getElementById('counter');
+        const resetButton = document.getElementById('reset');
+        const videoElement = document.getElementById('video');
+
+        document.getElementById('hammer').addEventListener('click', () => {
+            clicks++;
+            counterDisplay.textContent = 'Clicks: ' + clicks;
+
+            if (clicks === 3) {
+                document.getElementById('hammer').style.display = 'none';
+                videoElement.style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('hammer').style.display = 'block';
+                }, 3000);
+            } else if (clicks >= 5) {
+                videoElement.style.display = 'block';
+                videoElement.play();
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            clicks = 0;
+            counterDisplay.textContent = 'Clicks: 0';
+            videoElement.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
