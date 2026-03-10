@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hammer Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* === Layout & page styling === */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+      background-color: #ffffff;
+      color: #111827;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08),
+        0 1px 3px rgba(15, 23, 42, 0.08);
+      background-color: #ffffff;
+      max-width: 420px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .counter {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #4b5563;
+    }
+
+    /* === Hammer button === */
+    .hammer-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 90px;
+      height: 90px;
+      border-radius: 999px;
+      border: none;
+      background: radial-gradient(circle at 30% 20%, #f9fafb, #e5e7eb);
+      box-shadow:
+        0 10px 20px rgba(15, 23, 42, 0.18),
+        0 2px 4px rgba(15, 23, 42, 0.08);
+      cursor: pointer;
+      font-size: 2.4rem;
+      transition:
+        transform 0.15s ease-out,
+        box-shadow 0.15s ease-out,
+        background 0.15s ease-out;
+      outline: none;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .hammer-button:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 16px 30px rgba(15, 23, 42, 0.22),
+        0 4px 6px rgba(15, 23, 42, 0.12);
+      background: radial-gradient(circle at 30% 10%, #f9fafb, #d1d5db);
+    }
+
+    .hammer-button:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow:
+        0 6px 12px rgba(15, 23, 42, 0.24),
+        0 2px 4px rgba(15, 23, 42, 0.14);
+    }
+
+    .hammer-emoji {
+      display: inline-block;
+      transform-origin: bottom center;
+    }
+
+    /* Hammer swing animation */
+    @keyframes hammer-swing {
+      0% {
+        transform: rotate(0deg);
+      }
+      30% {
+        transform: rotate(-25deg) translateY(1px);
+      }
+      60% {
+        transform: rotate(12deg) translateY(-1px);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+
+    .hammer-swing {
+      animation: hammer-swing 0.22s ease-out;
+    }
+
+    /* === Reset button === */
+    .reset-button {
+      margin-top: 14px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+      color: #4b5563;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition:
+        background-color 0.14s ease-out,
+        transform 0.14s ease-out,
+        box-shadow 0.14s ease-out,
+        border-color 0.14s ease-out;
+      outline: none;
+    }
+
+    .reset-button:hover {
+      background-color: #e5e7eb;
+      border-color: #d1d5db;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .reset-button:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
+    }
+
+    /* === Hidden reveal section === */
+    .reveal-container {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .reveal-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #111827;
+    }
+
+    /* Image and video share the same visual style */
+    .reveal-image,
+    .reveal-video {
+      max-width: 220px;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.28),
+        0 4px 10px rgba(15, 23, 42, 0.16);
+      object-fit: cover;
+    }
+
+    /* Fade + scale animation for reveal */
+    @keyframes fade-scale-in {
+      0% {
+        opacity: 0;
+        transform: scale(0.94) translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .animate-reveal {
+      animation: fade-scale-in 0.35s ease-out forwards;
+    }
+
+    /* === Small helper text === */
+    .hint {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    /* === Responsive tweaks === */
+    @media (max-width: 480px) {
+      .game-wrapper {
+        margin: 0 16px;
+        padding: 20px;
+      }
+
+      .title {
+        font-size: 1.2rem;
+      }
+
+      .hammer-button {
+        width: 80px;
+        height: 80px;
+        font-size: 2.1rem;
+      }
+
+      .reveal-image,
+      .reveal-video {
+        max-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrapper">
+    <!-- Main title -->
+    <h1 class="title">He Rambo! Mep 3x met die hamer</h1>
+
+    <!-- Hammer button + counter -->
+    <button id="hammerButton" class="hammer-button" type="button">
+      <span id="hammerEmoji" class="hammer-emoji">🔨</span>
+    </button>
+
+    <div id="clickCounter" class="counter">Clicks: 0</div>
+    <div id="hintText" class="hint">Tik drie keer om de verrassing te zien.</div>
+
+    <!-- Reset button -->
+    <button id="resetButton" class="reset-button" type="button">
+      Reset
+    </button>
+
+    <!-- Hidden reveal content -->
+    <div id="revealContainer" class="reveal-container hidden">
+      <div
+        id="revealTextMain"
+        class="reveal-text hidden"
+      >
+        Wat is dit nou weeeer
+      </div>
+      <div
+        id="revealTextHint"
+        class="reveal-text hidden"
+      >
+        Klik nog 2x voor de volgende verrassing.
+      </div>
+      <img
+        id="revealImage"
+        class="reveal-image hidden"
+        src="assets/marit.png"
+        alt="Verrassingsafbeelding"
+      />
+      <video
+        id="revealVideo"
+        class="reveal-video hidden"
+        src="assets/video.mp4"
+        controls
+        muted
+        playsinline
+      ></video>
+    </div>
+  </div>
+
+  <script>
+    // === DOM references ===
+    const hammerButton = document.getElementById("hammerButton");
+    const hammerEmoji = document.getElementById("hammerEmoji");
+    const resetButton = document.getElementById("resetButton");
+    const clickCounterEl = document.getElementById("clickCounter");
+    const hintText = document.getElementById("hintText");
+    const revealContainer = document.getElementById("revealContainer");
+    const revealTextMain = document.getElementById("revealTextMain");
+    const revealTextHint = document.getElementById("revealTextHint");
+    const revealImage = document.getElementById("revealImage");
+    const revealVideo = document.getElementById("revealVideo");
+
+    // === Game state ===
+    let clickCount = 0;
+    const INITIAL_HINT = "Tik drie keer om de verrassing te zien.";
+    const IMAGE_CLICK = 3;
+    const VIDEO_CLICK = 5;
+
+    // Update counter text on screen
+    function updateCounter() {
+      clickCounterEl.textContent = "Clicks: " + clickCount;
+    }
+
+    // Helper to run fade/scale animation on an element
+    function animateRevealElement(el) {
+      el.classList.remove("hidden");
+      el.classList.remove("animate-reveal");
+      // Force reflow so animation restarts each time
+      void el.offsetWidth;
+      el.classList.add("animate-reveal");
+    }
+
+    // Handle behavior for the 3rd click
+    function handleThirdClick() {
+      // Show container
+      revealContainer.classList.remove("hidden");
+
+      // Show main text, extra hint, and image with animation
+      animateRevealElement(revealTextMain);
+      animateRevealElement(revealTextHint);
+      animateRevealElement(revealImage);
+    }
+
+    // Handle behavior for the 4th click
+    function handleFourthClick() {
+      // Hide the image again, keep texts visible
+      revealImage.classList.add("hidden");
+      revealImage.classList.remove("animate-reveal");
+    }
+
+    // Handle behavior for the 5th click
+    function handleFifthClick() {
+      // Ensure container visible and image hidden
+  revealContainer.classList.remove("hidden");
+  revealImage.classList.add("hidden");
+  revealImage.classList.remove("animate-reveal");
+  // Hide the "Klik nog 2x..." line once the video appears
+  revealTextHint.classList.add("hidden");
+  revealTextHint.classList.remove("animate-reveal");
+  // Show video with same animation and autoplay
+  animateRevealElement(revealVideo);
+  revealVideo.currentTime = 0;
+  revealVideo
+    .play()
+    .catch(() => {
+      // If autoplay is blocked, user can still press play manually
+    });
+}
+
+    // Reset everything back to initial state
+    function resetGame() {
+      clickCount = 0;
+      updateCounter();
+
+      // Reset hint under the counter
+      hintText.textContent = INITIAL_HINT;
+
+      // Hide reveal container and all reveal elements
+      revealContainer.classList.add("hidden");
+
+      [revealTextMain, revealTextHint, revealImage, revealVideo].forEach(
+        (el) => {
+          el.classList.add("hidden");
+          el.classList.remove("animate-reveal");
+        }
+      );
+
+      // Pause and reset video
+      revealVideo.pause();
+      revealVideo.currentTime = 0;
+    }
+
+    // Handle hammer click
+    hammerButton.addEventListener("click", () => {
+      // Increment click count
+      clickCount += 1;
+      updateCounter();
+
+      // Trigger hammer swing animation
+      hammerEmoji.classList.remove("hammer-swing");
+      void hammerEmoji.offsetWidth; // force reflow
+      hammerEmoji.classList.add("hammer-swing");
+
+      // Click-specific behavior
+      if (clickCount === IMAGE_CLICK) {
+        handleThirdClick();
+      } else if (clickCount === 4) {
+        handleFourthClick();
+      } else if (clickCount === VIDEO_CLICK) {
+        handleFifthClick();
+      }
+    });
+
+    // Remove hammer swing class when animation ends (cleanup)
+    hammerEmoji.addEventListener("animationend", () => {
+      hammerEmoji.classList.remove("hammer-swing");
+    });
+
+    // Handle reset click
+    resetButton.addEventListener("click", () => {
+      resetGame();
+    });
+  </script>
+</body>
+</html>
